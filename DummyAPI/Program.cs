@@ -33,6 +33,18 @@ try
 
         }).ToList();
 
+    //Aqui realizamos um agrupamento pela categoria e utilizamos o SelectMany para achatar a lista de tags, desta forma tendo apenas 2 listas,
+    //uma com a chave (categoria) e a outra com as tags
+    var tagsAgrupadosPelaCategoria = resultado?.Products
+        .GroupBy(x => x.Category)
+        .Select(x => new {
+            Categoria = x.Key,
+            Tags = x.SelectMany(produto => produto.Tags)
+            .Distinct()
+            .ToList() 
+        })
+        .ToList();
+
     #endregion
 
     if (resultado != null)
@@ -45,11 +57,11 @@ try
         //    Console.WriteLine(produto.ToString());
         //}
 
-        foreach (var item in nomesDosProdutosSeparadosPorCategoria)
+        foreach (var item in tagsAgrupadosPelaCategoria)
         {
             Console.WriteLine("");
-            Console.WriteLine($"--- Categoria: {item.NomeDaCategoria} ---");
-            foreach (var produto in item.TitulosDosProdutos)
+            Console.WriteLine($"--- Categoria: {item.Categoria} ---");
+            foreach (var produto in item.Tags)
             {
                 Console.WriteLine(produto.ToString());
             }
